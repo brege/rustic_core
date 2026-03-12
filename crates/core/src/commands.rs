@@ -1,6 +1,7 @@
 //! The commands that can be run by the CLI.
 
 pub mod backup;
+pub(crate) mod backup_source;
 pub mod cat;
 pub mod check;
 pub mod config;
