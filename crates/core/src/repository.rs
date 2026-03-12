@@ -21,7 +21,7 @@ use serde_with::{DisplayFromStr, serde_as};
 use crate::{
     RepositoryBackends, RusticError,
     backend::{
-        FileType, FindInBackend, ReadBackend, WriteBackend,
+        FileType, FindInBackend, ReadBackend, ReadSource, WriteBackend,
         cache::{Cache, CachedBackend},
         decrypt::{DecryptBackend, DecryptReadBackend, DecryptWriteBackend},
         hotcold::HotColdBackend,
@@ -39,6 +39,7 @@ use crate::{
     commands::{
         self,
         backup::BackupOptions,
+        backup_source,
         check::{CheckOptions, CheckResults, check_repository},
         config::{ConfigOptions, save_config_hot},
         copy::CopySnapshot,
@@ -1686,6 +1687,25 @@ impl<S: IndexedIds> Repository<S> {
         snap: SnapshotFile,
     ) -> RusticResult<SnapshotFile> {
         commands::backup::backup(self, opts, source, snap)
+    }
+
+    /// Run a backup using a custom [`ReadSource`].
+    ///
+    /// `backup_root` must be the common prefix of the entry paths yielded by
+    /// `src`, and `src` must yield entries in tree-compatible path order.
+    pub fn backup_source<R>(
+        &self,
+        opts: &BackupOptions,
+        backup_root: &Path,
+        src: &R,
+        snap: SnapshotFile,
+    ) -> RusticResult<SnapshotFile>
+    where
+        R: ReadSource + 'static,
+        <R as ReadSource>::Open: Send,
+        <R as ReadSource>::Iter: Send,
+    {
+        backup_source::backup_source(self, opts, backup_root, src, snap)
     }
 }
 

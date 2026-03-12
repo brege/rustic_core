@@ -124,6 +124,16 @@ pub(crate) mod repository;
 /// Virtual File System support - allows to act on the repository like on a file system
 pub mod vfs;
 
+/// Node types and metadata used by custom backup sources.
+pub mod node {
+    pub use crate::backend::node::{
+        Metadata, Node, NodeType, last_modified_node,
+        modification::{
+            BlockdevOption, DevIdOption, NodeModification, TimeOption, XattrOption,
+        },
+    };
+}
+
 // rustic_core Public API
 pub use crate::{
     backend::{
@@ -132,12 +142,6 @@ pub use crate::{
         decrypt::{compression_level_range, max_compression_level},
         ignore::{LocalSource, LocalSourceFilterOptions, LocalSourceSaveOptions},
         local_destination::LocalDestination,
-        node::{
-            last_modified_node,
-            modification::{
-                BlockdevOption, DevIdOption, NodeModification, TimeOption, XattrOption,
-            },
-        },
     },
     blob::{
         BlobId, DataId, PackedId,
