@@ -1,0 +1,46 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    name: Rebase on upstream main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Rebase main on upstream
+        run: |
+          git remote add upstream https://github.com/rustic-rs/rustic_core.git
+          git fetch upstream main
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "main is already current"
+            exit 0
+          fi
+          git rebase upstream/main
+          git push --force-with-lease origin main
+
+      - name: Rebase feature branch
+        run: |
+          git fetch origin sak-readsource-seam
+          git checkout sak-readsource-seam
+          git rebase main
+          git push --force-with-lease origin sak-readsource-seam
