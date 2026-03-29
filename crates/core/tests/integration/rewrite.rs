@@ -7,8 +7,9 @@ use pretty_assertions::assert_eq;
 use rstest::rstest;
 
 use rustic_core::{
-    BackupOptions, Excludes, LsOptions, NodeModification, RewriteOptions, RewriteTreesOptions,
-    RusticResult, StringList,
+    BackupOptions, Excludes, LsOptions, RewriteOptions, RewriteTreesOptions, RusticResult,
+    StringList,
+    node::NodeModification,
     repofile::{Metadata, Node, SnapshotFile, SnapshotModification},
 };
 
