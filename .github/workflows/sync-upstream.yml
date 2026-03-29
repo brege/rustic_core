@@ -38,9 +38,11 @@ jobs:
           git rebase upstream/main
           git push --force-with-lease origin main
 
-      - name: Rebase feature branch
+      - name: Rebuild feature branch on main
         run: |
           git fetch origin sak-readsource-seam
-          git checkout sak-readsource-seam
-          git rebase main
+          git checkout -B sak-readsource-seam main
+          for sha in $(git rev-list --reverse main..FETCH_HEAD -- ':!.github/workflows/sync-upstream.yml'); do
+            git cherry-pick "$sha"
+          done
           git push --force-with-lease origin sak-readsource-seam
